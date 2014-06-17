@@ -46,20 +46,26 @@ comnode merge_node(struct comnode node1, struct comnode node2) {
 }
 
 
-comnode *find_all_com(int a[], int len, int com_count, int start, int *final_node) {
-    int i;
-    for (i=start; i<(len-com_count); i++) {
-        struct comnode node = find_all_com(a, len, com_count, i+1, final_node);
+comnode find_all_com(int a[], int len, int com_count, int s) {
+	if (com_count == 1) {
+		return &a[s];
+	}
 
-        struct comnode cur_node;
-        cur_node.len = 1;
-        cur_node.ptr = (int *)malloc(sizeof(int)*1);
-        cur_node.ptr[0] = i;
+	int next_com_count = com_count - 1;
+	int i ,j ,k;
+	for (i=s; i<(len-com_count); i++) {
+		comnode node = find_all_com(a, len, next_com_count, i+1);
+		int len = node.len;
+		int *ptr = node.ptr;
+	}
+	int total_size = len*com_count;
 
-        comnode result = merge_node(cur_node, node);
-        if (result.len == com_count)
-           merge_node(result, final_node, *final_node); 
-    } 
+	int *res = (int *)malloc(sizeof(int)*total_size);
+	for (j=0; j<(total_size/com_count); j++) {
+		for (k=1; k<=next_com_count; k++) {
+			*(res+j*next_com_count+k) = *(ptr+j*next_com_count+k);
+		} 
+	}
 }
 
 int compute_com_count(int n, int k) {
@@ -81,7 +87,7 @@ int compute_com_count(int n, int k) {
 
 main() {
     int maxlen = 16, i, rows=4, columns=4;
-    char source_data[17]={0}, s[columns];
+    char source_data[maxlen]={0}, s[columns];	
 
     for (i=0; i<rows; i++) {  
         scanf("%s", s);
@@ -90,10 +96,30 @@ main() {
         strcat(source_data, s);
     }
 
+	int index[maxlen];
+	for (i=0; i<maxlen; i++) {
+		index[i] = i;
+	}
+
+	int k,h;
     for (i=1; i<=maxlen; i++) {
-        //find_all_com(source_data, i, 0, &node);
-        int fac_count = compute_com_count(16, 2);
-        com_index_ptr = (int *)malloc(sizeof(int)*fac_count*i);                
+        int fac_count = compute_com_count(maxlen, i);
+        com_index_ptr = (int *)malloc(sizeof(int)*fac_count*i); 
+
+		if (i == 1) {
+			for (k=0; k<maxlen; k++) 
+				*(com_index_ptr+k) = k+1;
+		} else {
+			comnode node = find_all_com(index, maxlen, i, i-1);
+			int len = node.len;
+			int *p = node.ptr;
+			
+			for (k=0; k<len; k++) {
+				for (h=i-1; h>0; h--) {
+					*(com_index_ptr+k*i+h) = *(p+k*i+h-1); 
+				}
+			}
+		}
     }
     
     printf("%s\n", source_data); 
