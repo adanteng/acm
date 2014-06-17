@@ -1,19 +1,5 @@
 #include <stdio.h>
-
-int get_max_pair_index(int *p, int pair_c) {
-	int index = 0, i;
-	float max_rate = (float)(*p)/(float)(*(p+1));	
-	for (i = 0; i < pair_c; i++) {
-		float bandwidths = *(p+i*2);
-		float price = *(p+i*2+1);
-		float rate = bandwidths/price;
-		if (rate > max_rate) {
-			max_rate = rate;
-			index = i;			
-		}
-	}
-	return index;
-}
+#include <malloc.h>
 
 int choose_device(int *ptr, int len, int key_b) {
 	int c_index=0, i, cur_p=-1;
@@ -57,8 +43,8 @@ main() {
 	if (sys_count < 1 || sys_count > 10) 
 		return 0;
 
-	int i, j, k;    
     float result[sys_count];
+	int i, j, k;    
 	for (i=0; i< sys_count; i++) {
 	    scanf("%d", &device_count);
 	    if (device_count < 1 || device_count > 100) 
@@ -74,7 +60,8 @@ main() {
 
 			pair_counts[j] = pair_count;
 
-			int pair[pair_count*2 + 1];
+            int *pair = (int *)malloc(sizeof(int)*(pair_count*2+1));
+			//int pair[pair_count*2 + 1];
 			int k = 0;
 			for (k=0; k<pair_count; k++) {
 				int bandwidths, price;
@@ -98,17 +85,18 @@ main() {
 			*/
 		}
 
+        float maxbp=-1; 
 		for (j=0; j<device_count; j++) {
-			int *curptr = deptr[1];
+			int *curptr = deptr[j];
 			int cur_pair_count = pair_counts[j];
 			int h;
 			for (h=0; h<cur_pair_count; h++) {
 				int b = *(curptr+h*2);
-				int p = *(curptr+h*2+2);
-					printf("%d %d\n",b, p);
+				int p = *(curptr+h*2+1);
+			    //printf("%d %d\n",b, p);
 
-				chose_devices[h*2] = b;
-				chose_devices[h*2+1] = p;					
+				chose_devices[j*2] = b;
+				chose_devices[j*2+1] = p;					
 
 				for (k=0; k<device_count; k++) {
 					if (k == j) continue;
@@ -116,20 +104,25 @@ main() {
 					int *chose_deptr = deptr[k];
 					int c_index = choose_device(chose_deptr, pair_counts[k], b); 
 					
-					printf("%d\n",c_index);
+					//printf("%d\n",c_index);
 
-					return 0;
 					chose_devices[k*2] = *(deptr[k]+c_index*2); 
 					chose_devices[k*2+1] = *(deptr[k]+c_index*2+1);
 				}
+
+                /*
+                int x;
+                for (x=0; x<device_count; x++) {
+                    printf("%d %d\n", chose_devices[x*2], chose_devices[x*2+1]);
+                }
+                */
+
+                float cur_bp = compute_rate(chose_devices, device_count);
+                if (cur_bp > maxbp)
+                    maxbp = cur_bp;
 			}
-			
 		}
-
-        float maxbp = compute_rate(chose_devices, device_count);
-
         result[i] = maxbp;
-
 	}
 
 	for (i=0; i< sys_count; i++) {
