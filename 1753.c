@@ -127,6 +127,42 @@ int compute_com_count(int n, int k) {
     } 
 }
 
+bool can_complete(int *p, int fac, int c, char *s) {
+	int i, j;
+	for (i=0; i<fac; i++) {
+		int *cur = (int *)malloc(sizeof(int)*c);
+		for	(j=0; j<c; j++) {
+			*(cur+j) = *(p+i*c+j);	
+		}
+
+	}	
+	return false;
+}
+
+char *flip(int *p, int c, char *s) {
+	int i;
+	for (i=0; i<c; i++) {
+		
+	}
+}
+
+char switch_piece(char c) {
+	if (c == 'b')
+		return 'w';
+	else if (c == 'w')
+		return 'b';
+}
+
+bool check_complete(char *s, int len) {
+	char first = *s;
+	int i;
+	for (i=0; i<len; i++) {
+		if (first != *(s+i))
+			return false;
+	}
+	return true;
+}
+
 main() {
     /*
     int maxlen = 16, i, rows=4, columns=4;
@@ -145,35 +181,12 @@ main() {
 	}
     */
 
-    /*
-	int k,h;
-    for (i=1; i<=maxlen; i++) {
-        int fac_count = compute_com_count(maxlen, i);
-        com_index_ptr = (int *)malloc(sizeof(int)*fac_count*i); 
 
-		if (i == 1) {
-			for (k=0; k<maxlen; k++) 
-				*(com_index_ptr+k) = k+1;
-		} else {
-			comnode node = find_all_com(index, maxlen, i, i-1);
-			int len = node.len;
-			int *p = node.ptr;
-			
-			for (k=0; k<len; k++) {
-				for (h=i-1; h>0; h--) {
-					*(com_index_ptr+k*i+h) = *(p+k*i+h-1); 
-				}
-			}
-		}
-    }
-    */
-
-    int *p = get_all_combine(16, 16, 2, 0);
-    int fac = compute_com_count(16, 2);
-    int i;
-    for (i=0; i<fac*2; i++)
-        printf("%d", *(p+i));
-    printf("\n");
+	int max=16, i;
+	for (i=1; i<=max; i++) {
+		int *p = get_all_combine(max, max, i, 0);	
+		int fac = compute_com_count(max, i);
+	}
     
     //printf("%s\n", source_data); 
 }
