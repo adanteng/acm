@@ -20,57 +20,8 @@
 #include <malloc.h>
 #include <string.h>
 
-typedef struct comnode {
-    int len;
-    int *ptr;
-} comnode;
-
 int *com_index_ptr;
-
 int compute_com_count(int n, int k);
-
-comnode merge_node(struct comnode node1, struct comnode node2) {
-    int len1 = node1.len, len2 = node2.len, *ptr1 = node1.ptr, *ptr2 = node2.ptr, i;
-    int *result = (int *)malloc(sizeof(int)*(len1+len2));
-
-    for (i=0; i<len1; i++) {
-        *(result+i) = *(ptr1+i);
-    }
-
-    for (i=0; i<len2; i++) {
-        *(result+i+len1) = *(ptr2+i);
-    }
-        
-    struct comnode resultnode;
-    resultnode.len = len1 + len2;
-    resultnode.ptr = result;            
-    return resultnode;            
-}
-
-
-/*
-comnode find_all_com(int a[], int len, int com_count, int s) {
-	if (com_count == 1) {
-		return &a[s];
-	}
-
-	int next_com_count = com_count - 1;
-	int i ,j ,k;
-	for (i=s; i<(len-com_count); i++) {
-		comnode node = find_all_com(a, len, next_com_count, i+1);
-		int len = node.len;
-		int *ptr = node.ptr;
-	}
-	int total_size = len*com_count;
-
-	int *res = (int *)malloc(sizeof(int)*total_size);
-	for (j=0; j<(total_size/com_count); j++) {
-		for (k=1; k<=next_com_count; k++) {
-			*(res+j*next_com_count+k) = *(ptr+j*next_com_count+k);
-		} 
-	}
-}
-*/
 
 int *get_all_combine(int maxn, int n, int c, int s) {
     int i, len=n-c+1, end=len+s, *res, pi=0;
@@ -177,7 +128,7 @@ int compute_com_count(int n, int k) {
 }
 
 main() {
-        /*
+    /*
     int maxlen = 16, i, rows=4, columns=4;
     char source_data[16]={0}, s[columns];	
 
@@ -217,12 +168,11 @@ main() {
     }
     */
 
-    int *p = get_all_combine(4, 4, 4, 0);
-    int fac = compute_com_count(4, 4);
+    int *p = get_all_combine(16, 16, 2, 0);
+    int fac = compute_com_count(16, 2);
     int i;
-    for (i=0; i<fac*4; i++)
+    for (i=0; i<fac*2; i++)
         printf("%d", *(p+i));
-
     printf("\n");
     
     //printf("%s\n", source_data); 
