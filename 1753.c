@@ -19,9 +19,14 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
+#include <math.h>
 
-int *com_index_ptr;
+int check_all_com(int *p, int fac, int c, char *s);
 int compute_com_count(int n, int k);
+char switch_piece(char c);
+int can_complete(char *s, int len);
+void flip(char *s, int pos);
+int get_index_by_cor(int x, int y);
 
 int *get_all_combine(int maxn, int n, int c, int s) {
     int i, len=n-c+1, end=len+s, *res, pi=0;
@@ -102,10 +107,9 @@ int *get_all_combine(int maxn, int n, int c, int s) {
     }
     
 
-    /*
     for (i=0; i<c*fac; i++) 
-        printf("%d\n", *(res+i));
-     */
+        printf("%d|", *(res+i));
+    printf("\n");
 
     return res;
 }
@@ -127,23 +131,61 @@ int compute_com_count(int n, int k) {
     } 
 }
 
-bool can_complete(int *p, int fac, int c, char *s) {
+int check_all_com(int *p, int fac, int c, char *s) {
 	int i, j;
 	for (i=0; i<fac; i++) {
-		int *cur = (int *)malloc(sizeof(int)*c);
+        char *ts = (char *)malloc(sizeof(char)*16);        
+        strcpy(ts, s);        
+
 		for	(j=0; j<c; j++) {
-			*(cur+j) = *(p+i*c+j);	
+			int pos = *(p+i*c+j);
+            flip(ts, pos);
 		}
 
+        if (can_complete(ts, 16))
+            return 1;
 	}	
-	return false;
+	return 0;
 }
 
-char *flip(int *p, int c, char *s) {
-	int i;
-	for (i=0; i<c; i++) {
-		
-	}
+void flip(char *s, int pos) {
+    printf("%d\n", pos);
+    float f = (float)pos/(float)4;
+    int x = (int)ceil(f);
+    int y = pos%4;
+    if (y == 0) y = 4;    
+
+    int index;
+    //cur
+    index = get_index_by_cor(x, y) - 1;
+    *(s+index) = switch_piece(*(s+index));
+
+    //up
+    if (x-1 > 0) {
+        index = get_index_by_cor(x-1, y) - 1;
+        *(s+index) = switch_piece(*(s+index));    
+    } 
+    //down
+    if (x+1 > 0) {
+        index = get_index_by_cor(x+1, y) - 1;
+        *(s+index) = switch_piece(*(s+index));
+    }
+    //left
+    if (y-1 > 0) {
+        index = get_index_by_cor(x, y-1) - 1;
+        *(s+index) = switch_piece(*(s+index));
+    }
+    //right
+    if (y+1 > 0) {
+        index = get_index_by_cor(x, y+1) - 1;
+        *(s+index) = switch_piece(*(s+index));
+    }
+
+    printf("%s\n", s);
+}
+
+int get_index_by_cor(int x, int y) {
+    return (x-1)*4 + y;
 }
 
 char switch_piece(char c) {
@@ -153,18 +195,18 @@ char switch_piece(char c) {
 		return 'b';
 }
 
-bool check_complete(char *s, int len) {
+int can_complete(char *s, int len) {
 	char first = *s;
 	int i;
 	for (i=0; i<len; i++) {
 		if (first != *(s+i))
-			return false;
+			return 0;
 	}
-	return true;
+	return 1;
 }
 
 main() {
-    /*
+        /*
     int maxlen = 16, i, rows=4, columns=4;
     char source_data[16]={0}, s[columns];	
 
@@ -174,19 +216,37 @@ main() {
         if (sl != 4) return 0;        
         strcat(source_data, s);
     }
+    */
 
+    /*
 	int index[maxlen];
 	for (i=0; i<maxlen; i++) {
 		index[i] = i;
+	}*/
+
+
+    /*
+	int max=16;
+	for (i=1; i<=max; i++) {
+        printf("%d\n", i);
+        printf("\n");
+		int *p = get_all_combine(max, max, i, 0);
+		int fac = compute_com_count(max, i);
+
 	}
+    */
+		int *p = get_all_combine(16, 16, 9, 0);
+
+
+    /*
+    int *p = (int *)malloc(sizeof(int)*2);
+    *p = 1;
+    *(p+1) = 2;
+    *(p+2) = 3;
+    int st = check_all_com(p, 1, 3, source_data);
     */
 
 
-	int max=16, i;
-	for (i=1; i<=max; i++) {
-		int *p = get_all_combine(max, max, i, 0);	
-		int fac = compute_com_count(max, i);
-	}
     
     //printf("%s\n", source_data); 
 }
