@@ -3,6 +3,7 @@
 int chess[6][6];
 int step;
 int flag=0;
+int rj[17], cj[17];
 
 int complete() {
     int i,j;
@@ -31,6 +32,9 @@ void dfs(int row, int col, int deep) {
 
     if (flag == 1 || row == 5) return;
 
+	rj[deep] = row;
+	cj[deep] = col;
+
     flip(row, col);
     if (col < 4)
         dfs(row, col+1, deep+1);
@@ -58,16 +62,18 @@ main() {
                 nouse = getchar();
         } 
 
-    for (i=0; i<=16; i++) {
+	if (complete() == 1) return 0;
+
+    for (i=1; i<=16; i++) {
         step = i;
         dfs(1, 1, 0);
-        if (flag == 1) break;
+
+		if (flag == 1) break;
     }
 
-    if (flag == 1)
-        printf("%d\n", step);
-    else
-        printf("%s\n", "Impossible");
+	printf("%d\n", step);
+	for (i=0; i<step; i++)
+		printf("%d %d\n", rj[i], cj[i]);
 
     /*
     for (i=1; i<5; i++)
