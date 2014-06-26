@@ -3,20 +3,23 @@
 #include <math.h>
 
 int comp(const void *a, const void *b) {
-    return (*(int *)a[0]-*(int *)a[1]) - (*(int *)b[0]-*(int *)b[1])
+    int t = ((int *)b)[0] - ((int *)a)[0];
+	if (t == 0) 
+		return ((int *)b)[1] - ((int *)a)[1];
 }
 
-double distance(int p1x, int p1y, int p2x, int p2y) {
-    return sqrt(pow(p1x-p2x, 2)+pow(p1y-p2y, 2));
+int get_max_radar_pos(int d, int x, int y) {
+	double rx = sqrt(pow(d, 2) - pow(y, 2)) + x;	
+	return floor(rx);
 }
 
-int get_radar_pos(int d, x, y) {
-	double rx = sqrt(pow(d, 2) - pow(y, 2)) + x;
+int get_min_radar_pos(int d, int x, int y) {
+	double rx = -sqrt(pow(d, 2) - pow(y, 2)) + x;	
 	return floor(rx);
 }
 
 main() {
-    int i, n, d, cr, rl, result[1000], rindex=0;
+    int i, n, d, result[1000], rindex=0;
 
     while (1) {
         scanf("%d %d", &n, &d);
@@ -26,42 +29,38 @@ main() {
         if (n<1 || n>1000) return;
 
 		int point[n][2];
-		int radar[n];
+		int radar[n][2];
 
 		int noresult = 0;
         for (i=0; i<n; i++) {
-            scanf("%d %d", point[i][0], point[i][1]);
+            scanf("%d %d", &point[i][0], &point[i][1]);
 
             if (point[i][1] > d) {
+				noresult = 1;
 				result[rindex++] = -1;
 				break;
 			}
+
+			radar[i][0] = get_min_radar_pos(d, point[i][0], point[i][1]);
+			radar[i][1] = get_max_radar_pos(d, point[i][0], point[i][1]);
         }
 		if (noresult) continue;
 
-        qsort(point, n, sizeof(int)*2, comp);
+        qsort(radar, n, sizeof(int)*2, comp);
 
-		radar[0] = get_radar_pos(d, point[0][1], point[0][0]);
-        cr = 0;
-		rl++;
+		int ef = radar[0][1];
+
+		int rs = 1;
 
         for (i=1; i<n; i++) {
-			int inradar = 0;
-			if (distance(radar[cr], 0, point[i][0], point[j][1]) <= d) {
-				inradar = 1;
-				break;
-			}
-
-			if (inradar) {
-				continue;
-			} else {
-				cr++;
-				radar[cr] = get_radar_pos(d, point[j][0], point[j][1]);
-				rl++;
+			if (point[i][0] <= ef) continue;
+			else {
+				rs++;
+				ef = point[i][1];
 			}
         }
 
-		result[rindex++] = rl
+		result[rindex++] = rs;
         
     }
 
