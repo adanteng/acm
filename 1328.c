@@ -33,12 +33,12 @@ main() {
 
         if (n<1 || n>1000) return;
 
-		int point[n][2];
+		double point[n][2];
 		double radar[n][2];
 
 		int noresult = 0;
         for (i=0; i<n; i++) {
-            scanf("%d %d", &point[i][0], &point[i][1]);
+            scanf("%lf %lf", &point[i][0], &point[i][1]);
 
             if (point[i][1] > d) {
 				noresult = 1;
@@ -51,7 +51,7 @@ main() {
 
         }
 		if (noresult) {
-			printf("Case %d: %d\n\n", rindex+1, -1);
+			//printf("Case %d: %d\n\n", rindex+1, -1);
 			rindex++;
 			continue;
 		}
@@ -63,7 +63,7 @@ main() {
 			printf("%f %f\n", radar[i][0], radar[i][1]);
 		*/
 
-		int ef = radar[0][1];
+		double ef = radar[0][1];
 
 		int rs = 1;
 
@@ -76,15 +76,13 @@ main() {
 			}
         }
 
-		printf("Case %d: %d\n\n", rindex+1, rs);
+		//printf("Case %d: %d\n\n", rindex+1, rs);
 
 		result[rindex++] = rs;
 
     }
 
-	/*
 	for (i=0; i<rindex; i++)
 		printf("Case %d: %d\n", i+1, result[i]);
-	*/
 
 }
