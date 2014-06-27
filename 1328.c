@@ -51,8 +51,8 @@ main() {
 
         }
 		if (noresult) {
+			printf("Case %d: %d\n\n", rindex+1, -1);
 			rindex++;
-			printf("\n");
 			continue;
 		}
 
@@ -68,23 +68,23 @@ main() {
 		int rs = 1;
 
         for (i=1; i<n; i++) {
-			if (radar[i][0] <= ef) {
-				if (radar[i][1] < ef)
-					ef = radar[i][1];
-				continue;
-			} else {
+			if (radar[i][0] > ef) {
 				rs++;
+				ef = radar[i][1];
+			} else if (radar[i][1] < ef) {
 				ef = radar[i][1];
 			}
         }
 
+		printf("Case %d: %d\n\n", rindex+1, rs);
+
 		result[rindex++] = rs;
 
-		printf("\n");
-        
     }
 
+	/*
 	for (i=0; i<rindex; i++)
 		printf("Case %d: %d\n", i+1, result[i]);
+	*/
 
 }
