@@ -3,19 +3,24 @@
 #include <math.h>
 
 int comp(const void *a, const void *b) {
-    int t = ((int *)b)[0] - ((int *)a)[0];
-	if (t == 0) 
-		return ((int *)b)[1] - ((int *)a)[1];
+    double t = ((double *)a)[0] - ((double *)b)[0];
+	if (t > 0)
+		return 1;
+	else if (t < 0)
+		return -1;
+	return 0;
 }
 
-int get_max_radar_pos(int d, int x, int y) {
-	double rx = sqrt(pow(d, 2) - pow(y, 2)) + x;	
-	return floor(rx);
+double get_max_radar_pos(int d, int x, int y) {
+	double rx = sqrt(pow(d, 2) - pow(y, 2)) + x;
+	return rx;
+	//return floor(rx);
 }
 
-int get_min_radar_pos(int d, int x, int y) {
+double get_min_radar_pos(int d, int x, int y) {
 	double rx = -sqrt(pow(d, 2) - pow(y, 2)) + x;	
-	return floor(rx);
+	return rx;
+	//return ceil(rx);
 }
 
 main() {
@@ -24,12 +29,12 @@ main() {
     while (1) {
         scanf("%d %d", &n, &d);
 
-        if (n==0 && d==0) return;
+        if (n==0 && d==0) break;
 
         if (n<1 || n>1000) return;
 
 		int point[n][2];
-		int radar[n][2];
+		double radar[n][2];
 
 		int noresult = 0;
         for (i=0; i<n; i++) {
@@ -37,34 +42,49 @@ main() {
 
             if (point[i][1] > d) {
 				noresult = 1;
-				result[rindex++] = -1;
-				break;
+				result[rindex] = -1;
+				continue;
 			}
 
 			radar[i][0] = get_min_radar_pos(d, point[i][0], point[i][1]);
 			radar[i][1] = get_max_radar_pos(d, point[i][0], point[i][1]);
-        }
-		if (noresult) continue;
 
-        qsort(radar, n, sizeof(int)*2, comp);
+        }
+		if (noresult) {
+			rindex++;
+			printf("\n");
+			continue;
+		}
+
+        qsort(radar, n, sizeof(double)*2, comp);
+		
+		/*
+		for (i=0; i<n; i++)
+			printf("%f %f\n", radar[i][0], radar[i][1]);
+		*/
 
 		int ef = radar[0][1];
 
 		int rs = 1;
 
         for (i=1; i<n; i++) {
-			if (point[i][0] <= ef) continue;
-			else {
+			if (radar[i][0] <= ef) {
+				if (radar[i][1] < ef)
+					ef = radar[i][1];
+				continue;
+			} else {
 				rs++;
-				ef = point[i][1];
+				ef = radar[i][1];
 			}
         }
 
 		result[rindex++] = rs;
+
+		printf("\n");
         
     }
 
-	for (i=0; i<=rindex; i++)
+	for (i=0; i<rindex; i++)
 		printf("Case %d: %d\n", i+1, result[i]);
 
 }
