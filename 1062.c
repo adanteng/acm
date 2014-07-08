@@ -5,6 +5,7 @@
 typedef struct node *node_pointer;
 typedef struct node {
 	int vertex;
+	int remain;
 	struct node *link;
 } node;
 
@@ -41,8 +42,8 @@ void min_heapify(int *dindex, int *dvalue, int *cindex, int i) {
 	if (min != i) {
 		exchange(dindex, min, i);
 		exchange(dvalue, min, i);
-		*(cindex + dindex[min]) = *(dindex + i);
-		*(cindex + dindex[i]) = *(dindex + min);
+		*(cindex + dindex[min]) = min;
+		*(cindex + dindex[i]) = i;
 		min_heapify(dindex, dvalue, cindex, min);
 	}
 }
@@ -54,15 +55,13 @@ main() {
 
 	heap_size = item_count;
 
-	int item[item_count][3], i, j, adj_index, remain, remain_arr[item_count+1], dvalue[item_count+1], dindex[item_count+1], cindex[item_count+1];
+	int item[item_count][3], i, j, adj_index, remain, dvalue[item_count+1], dindex[item_count+1], cindex[item_count+1];
 
 	node_pointer graph[item_count], head, t;
 
 	for (i=0; i<item_count; i++) {
 		graph[i] = (node_pointer)malloc(sizeof(node));
 	}
-
-	remain_arr[1] = 0;
 		
 	for (i=0; i<item_count; i++) {
 		scanf("%d %d %d", &item[i][0], &item[i][1], &item[i][2]);
@@ -77,19 +76,16 @@ main() {
 
 			t = (node_pointer)malloc(sizeof(node));
 			t->vertex = adj_index;
+			t->remain = remain;
 			t->link = NULL;
 			head->link = t;
-
-			remain_arr[adj_index] = remain;
 
 			head = head->link;
 		}
 
 	}
 
-	dindex[1] = 1;
-	dvalue[1] = 0;
-	for (i=2; i<=item_count; i++) {
+	for (i=1; i<=item_count; i++) {
 		dindex[i] = i;
 		dvalue[i] = item[0][0];
 	}
@@ -97,52 +93,53 @@ main() {
 	for (i=1; i<=item_count; i++) {
 		cindex[i] = i;
 	}
-		for (i=1; i<=item_count; i++)
-			printf("%d ", remain_arr[i]);
-		printf("\n");
 
-	int u, v, desv, adj;
+	int u, v, desv, adj, current_base;
+	node_pointer current;
 	while (heap_size > 0) {
 		u = 1;
 		v = heap_size;
 
 		adj = dindex[u] - 1;
-		head = graph[adj]->link;
-		for (; head; head=head->link) {
-			if (fabs(item[head->vertex-1][1]-item[adj][1]) <= level && fabs(item[head->vertex-1][1] - item[0][1]) <= level) {
-				desv = remain_arr[dindex[u]] + remain_arr[head->vertex] + item[head->vertex-1][0];				
-				if (desv < dvalue[dindex[head->vertex]])
-					dvalue[dindex[head->vertex]] = desv;
-			}
+		head = graph[adj];
+		current = head->link;
+		current_base = dvalue[u] - item[dindex[u]-1][0];
+		for (; current; current=current->link) {
+				if (fabs(item[current->vertex-1][1]-item[adj][1]) <= level && fabs(item[current->vertex-1][1] - item[0][1]) <= level) {
+					desv = current_base + current->remain + item[current->vertex-1][0];
+					if (desv < dvalue[cindex[current->vertex]])
+						dvalue[cindex[current->vertex]] = desv;
+				}
 		}
 
 		exchange(dindex, u, v);
 		exchange(dvalue, u, v);
-		cindex[u] = dindex[u];
-		cindex[v] = dindex[v];
+		cindex[dindex[u]] = u;
+		cindex[dindex[v]] = v;
 
 		heap_size--;
 		min_heapify(dindex, dvalue, cindex, 1);
+
+		/*
 		for (i=1; i<=item_count; i++)
 			printf("%d ", dindex[i]);
 		printf("\n");
 		for (i=1; i<=item_count; i++)
-			printf("%d ", dvalue[i]);
-		printf("\n");
-		for (i=1; i<=item_count; i++)
 			printf("%d ", cindex[i]);
 		printf("\n");
+		printf("\n");
+		for (i=1; i<=item_count; i++)
+			printf("%d ", dvalue[i]);
+		printf("\n");
+		*/
 
 	}
 	
-	int min_coins;
-	if (item_count == 1) {
-		min_coins = item[0][0];
-	} else {
-		for (i=2; i<=item_count; i++) {
-			if (dvalue[i] < min_coins) {
-				min_coins = dvalue[i];
-			}
+	int min_coins = dvalue[1];
+	for (i=1; i<=item_count; i++) {
+		if (i == cindex[1]) continue;
+		if (dvalue[i] < min_coins) {
+			min_coins = dvalue[i];
 		}
 	}
 
