@@ -55,7 +55,7 @@ main() {
 
 	heap_size = item_count;
 
-	int item[item_count][3], i, j, adj_index, remain, dvalue[item_count+1], dindex[item_count+1], cindex[item_count+1];
+	int item[item_count][3], i, j, adj_index, remain, dvalue[item_count+1], dindex[item_count+1], cindex[item_count+1], level_arr[item_count+1];
 
 	node_pointer graph[item_count], head, t;
 
@@ -80,6 +80,8 @@ main() {
 			t->link = NULL;
 			head->link = t;
 
+			level_arr[i+1] = item[i][1];
+
 			head = head->link;
 		}
 
@@ -94,7 +96,7 @@ main() {
 		cindex[i] = i;
 	}
 
-	int u, v, desv, adj, current_base;
+	int u, v, desv, adj, current_base, current_max_level;
 	node_pointer current;
 	while (heap_size > 0) {
 		u = 1;
@@ -105,11 +107,19 @@ main() {
 		current = head->link;
 		current_base = dvalue[u] - item[dindex[u]-1][0];
 		for (; current; current=current->link) {
-				if (fabs(item[current->vertex-1][1]-item[adj][1]) <= level && fabs(item[current->vertex-1][1] - item[0][1]) <= level) {
-					desv = current_base + current->remain + item[current->vertex-1][0];
-					if (desv < dvalue[cindex[current->vertex]])
-						dvalue[cindex[current->vertex]] = desv;
-				}
+			level_arr[current->vertex] = level_arr[head->vertex];
+			if (level_arr[head->vertex] < item[current->vertex-1][1]) {
+				level_arr[current->vertex] = item[current->vertex-1][1];
+			}
+
+			printf("%d\n", current->vertex);
+			printf("%d %d %d %d\n", level_arr[current->vertex], item[current->vertex-1][1], current->vertex, head->vertex);
+
+			if (fabs(item[current->vertex-1][1]-item[adj][1]) <= level && fabs(item[current->vertex-1][1] - item[0][1]) <= level && fabs(item[current->vertex-1][1] - level_arr[current->vertex]) <= level) {
+				desv = current_base + current->remain + item[current->vertex-1][0];
+				if (desv < dvalue[cindex[current->vertex]])
+					dvalue[cindex[current->vertex]] = desv;
+			}
 		}
 
 		exchange(dindex, u, v);
@@ -127,6 +137,14 @@ main() {
 		for (i=1; i<=item_count; i++)
 			printf("%d ", cindex[i]);
 		printf("\n");
+		printf("\n");
+		for (i=1; i<=item_count; i++)
+			printf("%d ", dvalue[i]);
+		printf("\n");
+		*/
+		/*
+		for (i=1; i<=item_count; i++)
+			printf("%d ", dindex[i]);
 		printf("\n");
 		for (i=1; i<=item_count; i++)
 			printf("%d ", dvalue[i]);
